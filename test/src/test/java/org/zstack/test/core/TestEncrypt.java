@@ -30,10 +30,10 @@ public class TestEncrypt {
         loader = con.build();
         rsa = loader.getComponent(EncryptRSA.class);
 
-        /*deployer = new Deployer("deployerXml/mevoco/TestMevoco.xml", con);
+        deployer = new Deployer("deployerXml/mevoco/TestMevoco.xml", con);
         deployer.addSpringConfig("mevocoRelated.xml");
         deployer.addSpringConfig("billing.xml");
-        deployer.load();*/
+        deployer.load();
 
         loader = deployer.getComponentLoader();
         //bus = loader.getComponent(CloudBus.class);
