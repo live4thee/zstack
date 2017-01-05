@@ -3,6 +3,7 @@ package org.zstack.core.encrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.zstack.core.Platform;
 import org.zstack.core.cloudbus.CloudBus;
+import org.zstack.core.db.DatabaseFacade;
 import org.zstack.header.AbstractService;
 import org.zstack.header.core.encrypt.APIUpdateEncryptKeyEvent;
 import org.zstack.header.core.encrypt.APIUpdateEncryptKeyMsg;
@@ -10,6 +11,7 @@ import org.zstack.header.message.Message;
 import org.zstack.utils.Utils;
 import org.zstack.utils.logging.CLogger;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Set;
 
@@ -20,6 +22,9 @@ public class EncryptManagerImpl extends AbstractService {
     private static final CLogger logger = Utils.getLogger(EncryptManagerImpl.class);
     @Autowired
     private CloudBus bus;
+
+    @Autowired
+    private DatabaseFacade dbf;
 
     @Override
     public boolean start() {
@@ -46,6 +51,18 @@ public class EncryptManagerImpl extends AbstractService {
         for (Method method: map) {
             String old_key = EncryptGlobalConfig.ENCRYPT_ALGORITHM.value();
             String new_key = msg.getEncryptKey();
+
+            Class tempClass = method.getDeclaringClass();
+            /*Field field = method.getParameters();
+
+            String sql = "update "+tempClass+" set vol.vmInstanceUuid = null where vol.uuid in (:uuids)";
+            Query q = dbf.getEntityManager().createQuery(sql);
+            q.setParameter("uuids", dataVolumeUuids);
+            q.executeUpdate();
+
+            String old_value =*/
+            //String old_value = dbf.createQuery();
+
             APIUpdateEncryptKeyEvent evt = new APIUpdateEncryptKeyEvent();
             bus.publish(evt);
         }

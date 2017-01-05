@@ -4,9 +4,11 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.zstack.core.componentloader.ComponentLoader;
+import org.zstack.core.db.DatabaseFacade;
 import org.zstack.core.encrypt.EncryptRSA;
 import org.zstack.header.core.encrypt.DECRYPT;
 import org.zstack.header.core.encrypt.ENCRYPT;
+import org.zstack.kvm.KVMHostVO;
 import org.zstack.test.BeanConstructor;
 
 /**
@@ -16,6 +18,7 @@ public class TestEncrypt {
     private String password;
     ComponentLoader loader;
     EncryptRSA rsa;
+    DatabaseFacade dbf;
 
     @Before
     public void setUp() throws Exception {
@@ -53,5 +56,9 @@ public class TestEncrypt {
 
         setPassword("test_update");
         Assert.assertEquals("test_update", getString());
+        KVMHostVO kvmHostVO = new KVMHostVO();
+        kvmHostVO.setUsername("test");
+        kvmHostVO.setPassword("password");
+        dbf.persist(kvmHostVO);
     }
 }
