@@ -9,14 +9,22 @@ import org.zstack.core.componentloader.ComponentLoader;
 import org.zstack.core.db.DatabaseFacade;
 import org.zstack.core.encrypt.EncryptManagerImpl;
 import org.zstack.core.encrypt.EncryptRSA;
+import org.zstack.header.allocator.HostCapacityVO;
+import org.zstack.header.allocator.HostCpuOverProvisioningManager;
+import org.zstack.header.cluster.ClusterInventory;
 import org.zstack.header.core.encrypt.DECRYPT;
 import org.zstack.header.core.encrypt.ENCRYPT;
+import org.zstack.header.host.APIAddHostEvent;
 import org.zstack.header.host.HostInventory;
+import org.zstack.header.identity.SessionInventory;
+import org.zstack.kvm.APIAddKVMHostMsg;
+import org.zstack.kvm.KVMHostFactory;
 import org.zstack.kvm.KVMHostVO;
-import org.zstack.test.BeanConstructor;
-import org.zstack.test.DBUtil;
+import org.zstack.simulator.kvm.KVMSimulatorConfig;
+import org.zstack.test.*;
 import org.zstack.test.deployer.Deployer;
 import org.zstack.utils.Utils;
+import org.zstack.utils.data.SizeUnit;
 import org.zstack.utils.logging.CLogger;
 
 /**
@@ -26,7 +34,13 @@ public class TestEncrypt {
     private String password;
     ComponentLoader loader;
     EncryptRSA rsa;
-    DatabaseFacade dbf;
+    static Api api;
+    static CloudBus bus;
+    static DatabaseFacade dbf;
+    static KVMHostFactory kvmFactory;
+    static SessionInventory session;
+    static KVMSimulatorConfig config;
+    static HostCpuOverProvisioningManager cpuMgr;
     private static final CLogger logger = Utils.getLogger(TestEncrypt.class);
     Deployer deployer;
 
@@ -35,8 +49,22 @@ public class TestEncrypt {
     public void setUp() throws Exception {
 
         DBUtil.reDeployDB();
-        BeanConstructor con = new BeanConstructor();
-        loader = con.build();
+        WebBeanConstructor con = new WebBeanConstructor();
+        deployer = new Deployer("deployerXml/kvm/TestAddKvmHost.xml", con);
+        deployer.addSpringConfig("Kvm.xml");
+        deployer.addSpringConfig("KVMSimulator.xml");
+        deployer.build();
+        api = deployer.getApi();
+        loader = deployer.getComponentLoader();
+        kvmFactory = loader.getComponent(KVMHostFactory.class);
+        bus = loader.getComponent(CloudBus.class);
+        dbf = loader.getComponent(DatabaseFacade.class);
+        config = loader.getComponent(KVMSimulatorConfig.class);
+        cpuMgr = loader.getComponent(HostCpuOverProvisioningManager.class);
+        session = api.loginAsAdmin();
+
+        BeanConstructor con1 = new BeanConstructor();
+        loader = con1.build();
         rsa = loader.getComponent(EncryptRSA.class);
 
         deployer = new Deployer("deployerXml/mevoco/TestMevoco.xml", con);
@@ -48,6 +76,20 @@ public class TestEncrypt {
         //bus = loader.getComponent(CloudBus.class);
         dbf = loader.getComponent(DatabaseFacade.class);
 
+    }
+
+    private HostInventory addHost() throws ApiSenderException {
+        ClusterInventory cinv = api.listClusters(null).get(0);
+        APIAddKVMHostMsg msg = new APIAddKVMHostMsg();
+        msg.setName("KVM-1");
+        msg.setClusterUuid(cinv.getUuid());
+        msg.setManagementIp("localhost");
+        msg.setUsername("admin");
+        msg.setPassword("password");
+        msg.setSession(session);
+        ApiSender sender = api.getApiSender();
+        APIAddHostEvent evt = sender.send(msg, APIAddHostEvent.class);
+        return evt.getInventory();
     }
 
     public String getPassword() {
@@ -69,7 +111,7 @@ public class TestEncrypt {
     }
 
     @Test
-    public void test(){
+    public void test() throws ApiSenderException {
         setString("pwd");
         Assert.assertNotSame("if encrypt successful, this couldn't be same.", "pwd", getPassword());
         String decreptPassword = getString();
@@ -80,9 +122,21 @@ public class TestEncrypt {
         setPassword("test_update");
         Assert.assertEquals("test_update", getString());
 
+        config.connectSuccess = true;
+        config.connectException = false;
+        config.hostFactSuccess = true;
+        config.hostFactException = false;
+        config.cpuNum = 1;
+        config.cpuSpeed = 2600;
+        config.totalMemory = SizeUnit.GIGABYTE.toByte(8);
+        config.usedMemory = SizeUnit.MEGABYTE.toByte(512);
+
+        String uuid = addHost().getUuid();
+        HostCapacityVO hvo = dbf.findByUuid(uuid, HostCapacityVO.class);
+
         KVMHostVO kvmHostVO = new KVMHostVO();
-        HostInventory k = deployer.hosts.get("host1");
-        String uuid = k.getUuid();
+        /*HostInventory k = deployer.hosts.get("host1");
+        String uuid = k.getUuid();*/
 
         logger.debug("uuid is: "+uuid);
         kvmHostVO.setUuid(uuid);
