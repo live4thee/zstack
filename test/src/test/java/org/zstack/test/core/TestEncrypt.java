@@ -11,6 +11,7 @@ import org.zstack.core.encrypt.EncryptManagerImpl;
 import org.zstack.core.encrypt.EncryptRSA;
 import org.zstack.header.core.encrypt.DECRYPT;
 import org.zstack.header.core.encrypt.ENCRYPT;
+import org.zstack.header.host.HostInventory;
 import org.zstack.kvm.KVMHostVO;
 import org.zstack.test.BeanConstructor;
 import org.zstack.test.DBUtil;
@@ -80,7 +81,9 @@ public class TestEncrypt {
         Assert.assertEquals("test_update", getString());
 
         KVMHostVO kvmHostVO = new KVMHostVO();
-        String uuid = Platform.getUuid();
+        HostInventory k = deployer.hosts.get("host1");
+        String uuid = k.getUuid();
+
         logger.debug("uuid is: "+uuid);
         kvmHostVO.setUuid(uuid);
         kvmHostVO.setUsername("test");
