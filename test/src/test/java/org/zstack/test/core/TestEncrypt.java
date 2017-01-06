@@ -11,6 +11,7 @@ import org.zstack.header.core.encrypt.DECRYPT;
 import org.zstack.header.core.encrypt.ENCRYPT;
 import org.zstack.kvm.KVMHostVO;
 import org.zstack.test.BeanConstructor;
+import org.zstack.test.DBUtil;
 import org.zstack.test.deployer.Deployer;
 
 /**
@@ -26,6 +27,7 @@ public class TestEncrypt {
 
     @Before
     public void setUp() throws Exception {
+        DBUtil.reDeployDB();
         BeanConstructor con = new BeanConstructor();
         loader = con.build();
         rsa = loader.getComponent(EncryptRSA.class);
