@@ -3,9 +3,11 @@ package org.zstack.test.core;
 import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.zstack.core.Platform;
 import org.zstack.core.cloudbus.CloudBus;
 import org.zstack.core.componentloader.ComponentLoader;
 import org.zstack.core.db.DatabaseFacade;
+import org.zstack.core.encrypt.EncryptManagerImpl;
 import org.zstack.core.encrypt.EncryptRSA;
 import org.zstack.header.core.encrypt.DECRYPT;
 import org.zstack.header.core.encrypt.ENCRYPT;
@@ -13,6 +15,8 @@ import org.zstack.kvm.KVMHostVO;
 import org.zstack.test.BeanConstructor;
 import org.zstack.test.DBUtil;
 import org.zstack.test.deployer.Deployer;
+import org.zstack.utils.Utils;
+import org.zstack.utils.logging.CLogger;
 
 /**
  * Created by mingjian.deng on 16/11/2.
@@ -22,11 +26,13 @@ public class TestEncrypt {
     ComponentLoader loader;
     EncryptRSA rsa;
     DatabaseFacade dbf;
+    private static final CLogger logger = Utils.getLogger(TestEncrypt.class);
     Deployer deployer;
 
 
     @Before
     public void setUp() throws Exception {
+
         DBUtil.reDeployDB();
         BeanConstructor con = new BeanConstructor();
         loader = con.build();
@@ -74,8 +80,11 @@ public class TestEncrypt {
         Assert.assertEquals("test_update", getString());
 
         KVMHostVO kvmHostVO = new KVMHostVO();
+        String uuid = Platform.getUuid();
+        logger.debug("uuid is: "+uuid);
+        kvmHostVO.setUuid(uuid);
         kvmHostVO.setUsername("test");
         kvmHostVO.setPassword("password");
-        dbf.persist(kvmHostVO);
+        //dbf.persist(kvmHostVO);
     }
 }
