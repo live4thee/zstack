@@ -81,7 +81,7 @@ public class EncryptManagerImpl extends AbstractService {
             List uuidList = q1.getResultList();
 
             for (int i=0; i<uuidList.size(); i++){
-                String sql2 = "select "+paramName+" from "+className+" where uuid = "+uuidList.get(i);
+                String sql2 = "select "+paramName+" from "+className+" where uuid = \""+uuidList.get(i)+"\"";
                 logger.debug(String.format("sql2 is: %s ",sql2));
                 Query q2 = dbf.getEntityManager().createNativeQuery(sql2);
                 String preEncrypttxt = q2.getResultList().get(0).toString();
@@ -92,7 +92,7 @@ public class EncryptManagerImpl extends AbstractService {
                     rsa.updateKey(msg.getEncryptKey());
                     String newencrypttxt = (String) rsa.encrypt1(password);
 
-                    String sql3 = "update "+className+" set "+paramName+" = "+newencrypttxt+" where uuid = "+uuidList.get(i);
+                    String sql3 = "update "+className+" set "+paramName+" = "+newencrypttxt+" where uuid = \""+uuidList.get(i)+"\"";
                     Query query = dbf.getEntityManager().createQuery(sql3);
                     query.executeUpdate();
 

@@ -97,7 +97,7 @@ public class TestEncrypt {
         ClusterInventory cinv = api.listClusters(null).get(0);
         APIUpdateEncryptKeyMsg msg = new APIUpdateEncryptKeyMsg();
 
-        msg.setEncryptKey("password");
+        msg.setEncryptKey("zDXbBPIDPKVo230xjcqFcg==");
         msg.setSession(session);
         ApiSender sender = api.getApiSender();
         APIAddHostEvent evt = sender.send(msg, APIAddHostEvent.class);
