@@ -50,7 +50,7 @@ public class EncryptManagerImpl extends AbstractService {
         }
     }
 
-    private<T> void handle(APIUpdateEncryptKeyMsg msg) {
+    private void handle(APIUpdateEncryptKeyMsg msg) {
         Set<Method> map = Platform.encryptedMethodsMap;
         logger.debug("decrypt passwords with old key and encrypt with new key");
         for (Method method: map) {
@@ -91,7 +91,7 @@ public class EncryptManagerImpl extends AbstractService {
 
             //String old_value = dbf.createQuery();
 
-            APIUpdateEncryptKeyEvent evt = new APIUpdateEncryptKeyEvent();
+            APIUpdateEncryptKeyEvent evt = new APIUpdateEncryptKeyEvent(msg.getId());
             bus.publish(evt);
         }
     }

@@ -86,7 +86,7 @@ public class TestEncrypt {
         msg.setClusterUuid(cinv.getUuid());
         msg.setManagementIp("localhost");
         msg.setUsername("admin");
-        msg.setPassword("password");
+        msg.setPassword("password1");
         msg.setSession(session);
         ApiSender sender = api.getApiSender();
         APIAddHostEvent evt = sender.send(msg, APIAddHostEvent.class);
