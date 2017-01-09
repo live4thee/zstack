@@ -12,6 +12,7 @@ import org.zstack.core.encrypt.EncryptRSA;
 import org.zstack.header.allocator.HostCapacityVO;
 import org.zstack.header.allocator.HostCpuOverProvisioningManager;
 import org.zstack.header.cluster.ClusterInventory;
+import org.zstack.header.core.encrypt.APIUpdateEncryptKeyMsg;
 import org.zstack.header.core.encrypt.DECRYPT;
 import org.zstack.header.core.encrypt.ENCRYPT;
 import org.zstack.header.host.APIAddHostEvent;
@@ -90,6 +91,17 @@ public class TestEncrypt {
         ApiSender sender = api.getApiSender();
         APIAddHostEvent evt = sender.send(msg, APIAddHostEvent.class);
         return evt.getInventory();
+    }
+
+    private String updateKey() throws ApiSenderException {
+        ClusterInventory cinv = api.listClusters(null).get(0);
+        APIUpdateEncryptKeyMsg msg = new APIUpdateEncryptKeyMsg();
+
+        msg.setEncryptKey("password");
+        msg.setSession(session);
+        ApiSender sender = api.getApiSender();
+        APIAddHostEvent evt = sender.send(msg, APIAddHostEvent.class);
+        return "success";
     }
 
     public String getPassword() {
