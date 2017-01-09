@@ -59,10 +59,11 @@ public class EncryptManagerImpl extends AbstractService {
 
             Class tempClass = method.getDeclaringClass();
             String className = tempClass.toString();
-            String paramName = method.getParameters()[0].getName();
+            //String paramName = method.getParameters()[0].getName();
+            String paramName = "password";
 
             logger.debug(String.format("className is : %s",className));
-            logger.debug(String.format("paramName is: %s "+paramName));
+            logger.debug(String.format("paramName is: %s ",paramName));
 
 
             //Class<?> classType = tempClass.
@@ -73,7 +74,7 @@ public class EncryptManagerImpl extends AbstractService {
 
 
             String sql = "select (:param) from "+className;
-            logger.debug(String.format("sql is: %s "+sql));
+            logger.debug(String.format("sql is: %s ",sql));
 
             Query q = dbf.getEntityManager().createNativeQuery(sql);
 
