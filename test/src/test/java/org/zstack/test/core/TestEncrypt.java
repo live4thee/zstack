@@ -143,17 +143,19 @@ public class TestEncrypt {
         config.totalMemory = SizeUnit.GIGABYTE.toByte(8);
         config.usedMemory = SizeUnit.MEGABYTE.toByte(512);
 
-        String uuid = addHost().getUuid();
+        String result = updateKey();
+
+        /*String uuid = addHost().getUuid();
         HostCapacityVO hvo = dbf.findByUuid(uuid, HostCapacityVO.class);
 
-        KVMHostVO kvmHostVO = new KVMHostVO();
+        KVMHostVO kvmHostVO = new KVMHostVO();*/
         /*HostInventory k = deployer.hosts.get("host1");
         String uuid = k.getUuid();*/
 
-        logger.debug("uuid is: "+uuid);
-        kvmHostVO.setUuid(uuid);
+        logger.debug("result is: "+result);
+        /*kvmHostVO.setUuid(uuid);
         kvmHostVO.setUsername("test");
-        kvmHostVO.setPassword("password");
+        kvmHostVO.setPassword("password");*/
         //dbf.persist(kvmHostVO);
     }
 }
