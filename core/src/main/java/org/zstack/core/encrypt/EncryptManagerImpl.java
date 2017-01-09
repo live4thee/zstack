@@ -8,6 +8,8 @@ import org.zstack.core.db.DatabaseFacade;
 import org.zstack.header.AbstractService;
 import org.zstack.header.core.encrypt.APIUpdateEncryptKeyEvent;
 import org.zstack.header.core.encrypt.APIUpdateEncryptKeyMsg;
+import org.zstack.header.core.encrypt.ENCRYPT;
+import org.zstack.header.core.encrypt.ENCRYPTParam;
 import org.zstack.header.message.Message;
 import org.zstack.header.volume.VolumeType;
 import org.zstack.utils.Utils;
@@ -71,17 +73,21 @@ public class EncryptManagerImpl extends AbstractService {
             //List<Object> tablelist = dbf.listAll(tempClass);
             /*Field field = method.getParameters();
             String old_value =*/
+            EncryptRSA rsa = new EncryptRSA();
 
-
-            String sql = "select"+paramName+"from "+className;
+            String sql = "select uuid,"+paramName+" from "+className;
             logger.debug(String.format("sql is: %s ",sql));
             Query q = dbf.getEntityManager().createNativeQuery(sql);
+
+
+
+            //String sql2 = "update "+className+" set "+paramName+" = "+ rsa.encrypt1()
             //q.setParameter("param", paramName);
 
             List aa = q.getResultList();
 
             for (int i=0; i<aa.size(); i++){
-                logger.debug(String.format("result i is : %s",aa.get(i))); ;
+                logger.debug(String.format("result i is : %s, %s",((EncryptParam)aa.get(i)).getUuid(),((EncryptParam)aa.get(i)).getPassword())); ;
             }
 
 
