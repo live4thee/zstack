@@ -52,7 +52,7 @@ public class EncryptManagerImpl extends AbstractService {
         }
     }
 
-    private void handle(APIUpdateEncryptKeyMsg msg) {
+    private void handle(APIUpdateEncryptKeyMsg msg){
         Set<Method> map = Platform.encryptedMethodsMap;
         logger.debug("decrypt passwords with old key and encrypt with new key");
         for (Method method: map) {
@@ -75,20 +75,45 @@ public class EncryptManagerImpl extends AbstractService {
             String old_value =*/
             EncryptRSA rsa = new EncryptRSA();
 
-            String sql = "select uuid,"+paramName+" from "+className;
-            logger.debug(String.format("sql is: %s ",sql));
-            Query q = dbf.getEntityManager().createNativeQuery(sql);
+            String sql1 = "select uuid from "+className;
+            logger.debug(String.format("sql1 is: %s ",sql1));
+            Query q1 = dbf.getEntityManager().createNativeQuery(sql1);
+            List uuidList = q1.getResultList();
+
+            for (int i=0; i<uuidList.size(); i++){
+                String sql2 = "select "+paramName+" from "+className+" where uuid = "+uuidList.get(i);
+                logger.debug(String.format("sql2 is: %s ",sql2));
+                Query q2 = dbf.getEntityManager().createNativeQuery(sql2);
+                String preEncrypttxt = q2.getResultList().get(0).toString();
+                logger.debug(String.format("preEncrypttxt is: %s ",preEncrypttxt));
+                try {
+
+                    String password = (String) rsa.decrypt1(preEncrypttxt);
+                    rsa.updateKey(msg.getEncryptKey());
+                    String newencrypttxt = (String) rsa.encrypt1(password);
+
+                    String sql3 = "update "+className+" set "+paramName+" = "+newencrypttxt+" where uuid = "+uuidList.get(i);
+                    Query query = dbf.getEntityManager().createQuery(sql3);
+                    query.executeUpdate();
+
+                }catch (Exception e){
+                    logger.debug(e.getStackTrace().toString());
+                }
+
+            }
+
+
 
 
 
             //String sql2 = "update "+className+" set "+paramName+" = "+ rsa.encrypt1()
             //q.setParameter("param", paramName);
 
-            List aa = q.getResultList();
 
-            for (int i=0; i<aa.size(); i++){
+
+            /*for (int i=0; i<aa.size(); i++){
                 logger.debug(String.format("result i is : %s, %s",((EncryptParam)aa.get(i)).getUuid(),((EncryptParam)aa.get(i)).getPassword())); ;
-            }
+            }*/
 
 
 

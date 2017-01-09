@@ -5,6 +5,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Configurable;
+import org.zstack.core.config.GlobalConfig;
 import org.zstack.core.config.GlobalConfigFacade;
 import org.zstack.utils.Utils;
 import org.zstack.utils.logging.CLogger;
@@ -30,11 +31,32 @@ public class EncryptRSA {
 	@Autowired
 	private GlobalConfigFacade gcf;
 
+
 	/*static{
 		if (key1 == null && key2 == null){
 			initSecretKey();
 		}
 	}*/
+
+	public String updateKey(String key) throws Exception{
+		try {
+			EncryptGlobalConfig.ENCRYPT_ALGORITHM.updateValue(key);
+
+			String keyString = EncryptGlobalConfig.ENCRYPT_ALGORITHM.value();
+			//String keyString2 = EncryptGlobalConfig.ENCRYPT_ALGORITHM.getDefaultValue()
+			logger.debug(String.format("key is : %s",keyString));
+			byte[] srcBytes = encodeUTF8(keyString);
+			key1 = Base64.decodeBase64(srcBytes);
+
+			//key1 = Base64.decodeBase64(encodeUTF8(keyString));
+			key2 = toKey(key1);
+			return "success";
+		}catch (Exception e){
+			logger.debug("change key failed");
+			logger.debug(e.getStackTrace().toString());
+			return "failed";
+		}
+	}
 
 	public void initKey() throws Exception{
 		/*KeyGenerator kg = null;
@@ -53,6 +75,7 @@ public class EncryptRSA {
 		try {
 			if (key1 == null && key2 == null){
 				String keyString = EncryptGlobalConfig.ENCRYPT_ALGORITHM.value();
+				//String keyString2 = EncryptGlobalConfig.ENCRYPT_ALGORITHM.getDefaultValue()
 				logger.debug(String.format("key is : %s",keyString));
 				byte[] srcBytes = encodeUTF8(keyString);
 				key1 = Base64.decodeBase64(srcBytes);
