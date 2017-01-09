@@ -58,7 +58,7 @@ public class EncryptManagerImpl extends AbstractService {
             String new_key = msg.getEncryptKey();
 
             Class tempClass = method.getDeclaringClass();
-            String className = tempClass.toString();
+            String className = tempClass.getSimpleName();
             //String paramName = method.getParameters()[0].getName();
             String paramName = "password";
 
