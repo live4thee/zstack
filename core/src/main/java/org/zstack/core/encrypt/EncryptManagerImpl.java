@@ -73,10 +73,10 @@ public class EncryptManagerImpl extends AbstractService {
             String old_value =*/
 
 
-            String sql = "select :param from "+className;
+            String sql = "select"+paramName+"from "+className;
             logger.debug(String.format("sql is: %s ",sql));
             Query q = dbf.getEntityManager().createNativeQuery(sql);
-            q.setParameter("param", paramName);
+            //q.setParameter("param", paramName);
 
             List aa = q.getResultList();
 
