@@ -91,7 +91,7 @@ public class EncryptManagerImpl extends AbstractService {
 
             //String old_value = dbf.createQuery();
 
-            APIUpdateEncryptKeyEvent evt = new APIUpdateEncryptKeyEvent(msg.getId());
+            APIUpdateEncryptKeyEvent evt = new APIUpdateEncryptKeyEvent();
             bus.publish(evt);
         }
     }
