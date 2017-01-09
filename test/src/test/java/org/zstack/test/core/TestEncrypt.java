@@ -146,11 +146,8 @@ public class TestEncrypt {
         String uuid = addHost().getUuid();
         HostCapacityVO hvo = dbf.findByUuid(uuid, HostCapacityVO.class);
 
-        String uuid1 = addHost().getUuid();
-        HostCapacityVO hvo1 = dbf.findByUuid(uuid, HostCapacityVO.class);
-
         String result = updateKey();
-        logger.debug("result is: "+result);
+        //logger.debug("result is: "+result);
 
         //dbf.persist(kvmHostVO);
     }
