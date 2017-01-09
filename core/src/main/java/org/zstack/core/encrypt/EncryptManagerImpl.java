@@ -75,12 +75,15 @@ public class EncryptManagerImpl extends AbstractService {
 
             String sql = "select (:param) from "+className;
             logger.debug(String.format("sql is: %s ",sql));
-
             Query q = dbf.getEntityManager().createNativeQuery(sql);
-
             q.setParameter("param", paramName);
 
-            logger.debug(String.format("result is : %s",q.getResultList())); ;
+            List aa = q.getResultList();
+
+            for (int i=0; i<aa.size(); i++){
+                logger.debug(String.format("result is : %s",aa.get(i))); ;
+            }
+
 
 
             /*String sql = "update "+className+" set vol.vmInstanceUuid = null where vol.uuid in (:uuids)";
