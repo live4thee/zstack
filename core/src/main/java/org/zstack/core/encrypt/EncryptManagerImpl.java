@@ -99,6 +99,7 @@ public class EncryptManagerImpl extends AbstractService {
                     Query query = dbf.getEntityManager().createQuery(sql3);
                     query.setParameter("newencrypttxt",newencrypttxt);
                     query.setParameter("uuid",uuidList.get(i));
+
                     query.executeUpdate();
 
                 }catch (Exception e){
