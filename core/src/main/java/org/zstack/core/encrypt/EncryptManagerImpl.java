@@ -100,7 +100,9 @@ public class EncryptManagerImpl extends AbstractService {
                     query.executeUpdate();
 
                 }catch (Exception e){
-                    logger.debug(e.getStackTrace().toString());
+                    logger.debug("sql exec error");
+                    logger.debug(String.format("error is : %s",e.getMessage()));
+                    e.printStackTrace();
                 }
 
             }
