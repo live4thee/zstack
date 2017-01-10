@@ -1,5 +1,6 @@
 package org.zstack.core.encrypt;
 
+import org.apache.commons.codec.binary.Base64;
 import org.dom4j.io.STAXEventReader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ import org.zstack.utils.logging.CLogger;
 import javax.persistence.*;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.security.Key;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -57,25 +59,19 @@ public class EncryptManagerImpl extends AbstractService {
     private void handle(APIUpdateEncryptKeyMsg msg){
         Set<Method> map = Platform.encryptedMethodsMap;
         logger.debug("decrypt passwords with old key and encrypt with new key");
+
+        EncryptRSA rsa = new EncryptRSA();
+
         for (Method method: map) {
             String old_key = EncryptGlobalConfig.ENCRYPT_ALGORITHM.value();
             String new_key = msg.getEncryptKey();
 
             Class tempClass = method.getDeclaringClass();
             String className = tempClass.getSimpleName();
-            //String paramName = method.getParameters()[0].getName();
             String paramName = "password";
 
             logger.debug(String.format("className is : %s",className));
             logger.debug(String.format("paramName is: %s ",paramName));
-
-
-            //Class<?> classType = tempClass.
-
-            //List<Object> tablelist = dbf.listAll(tempClass);
-            /*Field field = method.getParameters();
-            String old_value =*/
-            EncryptRSA rsa = new EncryptRSA();
 
             String sql1 = "select uuid from "+className;
             logger.debug(String.format("sql1 is: %s ",sql1));
@@ -92,7 +88,7 @@ public class EncryptManagerImpl extends AbstractService {
 
                     String password = (String) rsa.decrypt1(preEncrypttxt);
                     rsa.updateKey(msg.getEncryptKey());
-                    String newencrypttxt = (String) rsa.encrypt1(password);
+                    String newencrypttxt = (String) rsa.encrypt(password,msg.getEncryptKey());
 
                     String sql3 = "update "+className+" set "+paramName+" = :newencrypttxt where uuid = :uuid";
 
@@ -109,33 +105,17 @@ public class EncryptManagerImpl extends AbstractService {
                 }
 
             }
-
-
-
-
-
-            //String sql2 = "update "+className+" set "+paramName+" = "+ rsa.encrypt1()
-            //q.setParameter("param", paramName);
-
-
-
-            /*for (int i=0; i<aa.size(); i++){
-                logger.debug(String.format("result i is : %s, %s",((EncryptParam)aa.get(i)).getUuid(),((EncryptParam)aa.get(i)).getPassword())); ;
-            }*/
-
-
-
-            /*String sql = "update "+className+" set vol.vmInstanceUuid = null where vol.uuid in (:uuids)";
-            Query q = dbf.getEntityManager().createQuery(sql);
-            q.setParameter("uuids", dataVolumeUuids);
-            q.executeUpdate();*/
-
-
-            //String old_value = dbf.createQuery();
-
-            APIUpdateEncryptKeyEvent evt = new APIUpdateEncryptKeyEvent(msg.getId());
-            bus.publish(evt);
         }
+        try {
+            rsa.updateKey(msg.getEncryptKey());
+        }catch (Exception e){
+            logger.debug("update key in encryptrsa error");
+            logger.debug(String.format("error is : %s",e.getMessage()));
+            e.printStackTrace();
+        }
+
+        APIUpdateEncryptKeyEvent evt = new APIUpdateEncryptKeyEvent(msg.getId());
+        bus.publish(evt);
     }
 
     @Override

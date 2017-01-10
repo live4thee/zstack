@@ -172,6 +172,23 @@ public class EncryptRSA {
 		}
 	}
 
+	public String encrypt(String password,String keyString){
+		try {
+			password = appendString+password;
+
+			logger.debug(String.format("key is : %s",keyString));
+			byte[] srcBytes = encodeUTF8(keyString);
+			key1 = Base64.decodeBase64(srcBytes);
+			key2 = toKey(key1);
+			byte[] encryptData = encrypt(password.getBytes(),key2);
+			byte[] base64EncryptData = Base64.encodeBase64(encryptData);
+			return decodeUTF8(base64EncryptData);
+		}catch (Exception e){
+			logger.debug(e.getMessage());
+			return password;
+		}
+	}
+
 	public Object decrypt1(String password) throws Exception{
 		initKey();
 		try {
