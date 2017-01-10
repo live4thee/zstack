@@ -92,7 +92,7 @@ public class EncryptManagerImpl extends AbstractService {
                     rsa.updateKey(msg.getEncryptKey());
                     String newencrypttxt = (String) rsa.encrypt1(password);
 
-                    String sql3 = "update "+className+" set "+paramName+" = "+newencrypttxt+" where uuid = \""+uuidList.get(i)+"\"";
+                    String sql3 = "update "+className+" set "+paramName+" = \""+newencrypttxt+"\" where uuid = \""+uuidList.get(i)+"\"";
                     Query query = dbf.getEntityManager().createQuery(sql3);
                     query.executeUpdate();
 
