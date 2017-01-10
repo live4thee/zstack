@@ -16,6 +16,7 @@ import org.zstack.header.core.encrypt.APIUpdateEncryptKeyMsg;
 import org.zstack.header.core.encrypt.DECRYPT;
 import org.zstack.header.core.encrypt.ENCRYPT;
 import org.zstack.header.host.APIAddHostEvent;
+import org.zstack.header.core.encrypt.APIUpdateEncryptKeyEvent;
 import org.zstack.header.host.HostInventory;
 import org.zstack.header.identity.SessionInventory;
 import org.zstack.kvm.APIAddKVMHostMsg;
@@ -100,7 +101,7 @@ public class TestEncrypt {
         msg.setEncryptKey("zDXbBPIDPKVo230xjcqFcg==");
         msg.setSession(session);
         ApiSender sender = api.getApiSender();
-        APIAddHostEvent evt = sender.send(msg, APIAddHostEvent.class);
+        APIUpdateEncryptKeyEvent evt = sender.send(msg, APIUpdateEncryptKeyEvent.class);
         return "success";
     }
 
