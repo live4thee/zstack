@@ -2,6 +2,7 @@ package org.zstack.core.encrypt;
 
 import org.dom4j.io.STAXEventReader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.zstack.core.Platform;
 import org.zstack.core.cloudbus.CloudBus;
 import org.zstack.core.db.DatabaseFacade;
@@ -52,6 +53,7 @@ public class EncryptManagerImpl extends AbstractService {
         }
     }
 
+    @Transactional
     private void handle(APIUpdateEncryptKeyMsg msg){
         Set<Method> map = Platform.encryptedMethodsMap;
         logger.debug("decrypt passwords with old key and encrypt with new key");
